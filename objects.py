@@ -3,8 +3,6 @@
 import random
 import itertools
 
-from constants import Sorting
-
 class Card:
     def __init__(self, land: bool, mana: str):
         self.land = land
@@ -31,7 +29,6 @@ class ManaPool:
 
 class Deck:
     def __init__(self, cards: tuple[Card, ...]):
-        self.cards = cards
         self.remaining_cards = list(cards)
 
     def new_card(self) -> Card:
@@ -47,14 +44,7 @@ class Game:
         self.deck = deck
         self.mana_pool = ManaPool()
 
-    def start(self):
-        self.draw_count = 0
-        for _ in range(7):
-            new_card = self.deck.new_card()
-            if new_card.land:
-                self.mana_pool.add_land(new_card)
-
-    def new_turn(self):
+    def new_draw(self):
         self.draw_count += 1
         new_card = self.deck.new_card()
         if new_card.land:
@@ -70,5 +60,5 @@ class Game:
     def play_game(self):
         success = False
         while not success:
-            self.new_turn()
+            self.new_draw()
             success = self.success()
