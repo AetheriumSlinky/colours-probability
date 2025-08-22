@@ -1,6 +1,6 @@
 """Execute the game simulation."""
 
-from objects import Commander, Deck, Game
+from func.objects import Commander, Deck, Game
 from constants import Simulation
 
 def simulate(commander: Commander, cards: tuple) -> float:

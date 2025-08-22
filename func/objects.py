@@ -12,8 +12,8 @@ class Card:
 class Commander:
     def __init__(self, cost: str):
         self.mv = len(cost)
-        self.colours = set([char for char in cost if char in 'wubrg'])
-        self.generic = cost.count('c')
+        self.colours = [set([char for char in cost if char in 'wubrg']), ]
+        self.generic = cost.count('c') + int(''.join([char for char in cost if char.isnumeric()]))
 
 
 class ManaPool:
