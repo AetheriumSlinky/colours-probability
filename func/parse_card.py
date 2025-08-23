@@ -12,6 +12,7 @@ class JSONCard:
         self.commander = False
         self.produce = ''
         self.cost = ''
+        self.mv = 0
 
     def parse_card(self):
         try:
@@ -34,6 +35,7 @@ class JSONCard:
         self.name = self.card_data['name']
         self.commander = True
         self.__mana_cost()
+        self.__mana_value()
 
     def __nonland(self):
         pass
@@ -47,3 +49,6 @@ class JSONCard:
         cost: str = self.card_data['manaCost']
         cost = ''.join([char.casefold() for char in cost[1:-1].split(sep='}{')])
         self.cost = cost
+
+    def __mana_value(self):
+        self.mv = self.card_data['manaValue']

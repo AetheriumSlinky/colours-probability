@@ -1,5 +1,6 @@
 """Holds the different object types needed for the simulation."""
 
+import re
 import random
 import itertools
 
@@ -10,10 +11,25 @@ class Card:
 
 
 class Commander:
-    def __init__(self, cost: str):
-        self.mv = len(cost)
-        self.colours = [set([char for char in cost if char in 'wubrg']), ]
-        self.generic = cost.count('c') + int(''.join([char for char in cost if char.isnumeric()]))
+    def __init__(self, cost: str, mv: int):
+        self.mv = mv
+        self.colours = [tuple()]
+        if '/' not in cost:
+            self.colours = [tuple([char for char in cost if char in 'wubrg'])]  # [(wur)]
+        else:
+            self.__find_colours(cost)  # [(wur), (wuu)]
+        numerals = ''.join([char for char in cost if char.isnumeric()])
+        if numerals:
+            self.generic = cost.count('c') + int(''.join([char for char in cost if char.isnumeric()]))
+        else:
+            self.generic = cost.count('c')
+
+    def __find_colours(self, cost):
+        colours: list[str] = []
+        colour_pattern = re.compile(r"(?<!\/)([a-z])(?!\/)|(?:([a-z])\/([a-z]))")
+        for match in colour_pattern.finditer(cost):
+            colours.append(''.join(match.groups(default="")))
+        self.colours = [c for c in itertools.product(*colours)]  # a list of tuples of characters
 
 
 class ManaPool:
@@ -23,8 +39,8 @@ class ManaPool:
     def add_land(self, card: Card):
         self.mana.append(card.mana)
 
-    def produces(self) -> set:
-        return set(itertools.product(*[m for m in self.mana if m in 'wubrg']))
+    def produces(self) -> list:
+        return list(itertools.product(*[m for m in self.mana if m in 'wubrg']))
 
 
 class Deck:
@@ -51,10 +67,13 @@ class Game:
             self.mana_pool.add_land(new_card)
 
     def success(self) -> bool:
-        if len(self.mana_pool.mana) >= self.commander.mv:
-            for colours in self.mana_pool.produces():
-                if self.commander.colours.issubset(colours):
-                    return True
+        if self.draw_count >= self.commander.mv:
+            pool_options = self.mana_pool.produces()
+            commander_options = self.commander.colours
+            for pool_tuple in pool_options:
+                for commander_tuple in commander_options:
+                    if all(option in pool_tuple for option in commander_tuple):
+                        return True
         return False
 
     def play_game(self):
