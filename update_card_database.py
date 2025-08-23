@@ -11,8 +11,8 @@ if __name__ == '__main__':
 
     lands = []
     commanders = []
-    for card in all_card_data['data'].values():
-        new_card = JSONCard(card)
+    for card_data in all_card_data['data'].values():
+        new_card = JSONCard(card_data)
         new_card.parse_card()
         if new_card.land:
             lands.append(new_card)
@@ -43,7 +43,8 @@ if __name__ == '__main__':
     cursor.execute(create_commanders_table)
 
     for card in lands:
-        cursor.execute("INSERT INTO lands (name, mana) VALUES (?, ?);", (card.name, card.produce))
+        cursor.execute("INSERT INTO lands (name, mana) VALUES (?, ?);",
+                       (card.name, card.produces))
 
     for card in commanders:
         cursor.execute("INSERT INTO commanders (name, mv, cost) VALUES (?, ?, ?);",
@@ -52,3 +53,5 @@ if __name__ == '__main__':
     conn.commit()
     cursor.close()
     conn.close()
+
+    input("Database updated. Press 'Enter' to exit.")
