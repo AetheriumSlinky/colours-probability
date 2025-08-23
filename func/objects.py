@@ -11,13 +11,14 @@ class Card:
 
 
 class Commander:
-    def __init__(self, cost: str, mv: int):
+    def __init__(self, name: str, mv: int, cost: str):
+        self.name = name
         self.mv = mv
         self.colours = [tuple()]
         if '/' not in cost:
-            self.colours = [tuple([char for char in cost if char in 'wubrg'])]  # [(wur)]
+            self.colours = [tuple([char for char in cost if char in 'wubrg'])]
         else:
-            self.__find_colours(cost)  # [(wur), (wuu)]
+            self.__find_colours(cost)
         numerals = ''.join([char for char in cost if char.isnumeric()])
         if numerals:
             self.generic = cost.count('c') + int(''.join([char for char in cost if char.isnumeric()]))
@@ -29,7 +30,7 @@ class Commander:
         colour_pattern = re.compile(r"(?<!\/)([a-z])(?!\/)|(?:([a-z])\/([a-z]))")
         for match in colour_pattern.finditer(cost):
             colours.append(''.join(match.groups(default="")))
-        self.colours = [c for c in itertools.product(*colours)]  # a list of tuples of characters
+        self.colours = [c for c in itertools.product(*colours)]
 
 
 class ManaPool:

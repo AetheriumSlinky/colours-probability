@@ -3,7 +3,7 @@
 import json
 import sqlite3
 
-from func.parse_card import JSONCard
+from func.parse_json import JSONCard
 
 if __name__ == '__main__':
     with open('AtomicCards.json', encoding='utf-8') as c:
@@ -36,6 +36,7 @@ if __name__ == '__main__':
     create_commanders_table = """
         CREATE TABLE commanders (
             name VARCHAR(100),
+            mv INT,
             cost VARCHAR(15)
         );
     """
@@ -45,15 +46,9 @@ if __name__ == '__main__':
         cursor.execute("INSERT INTO lands (name, mana) VALUES (?, ?);", (card.name, card.produce))
 
     for card in commanders:
-        cursor.execute("INSERT INTO commanders (name, cost) VALUES (?, ?);", (card.name, card.cost))
+        cursor.execute("INSERT INTO commanders (name, mv, cost) VALUES (?, ?, ?);",
+                       (card.name, card.mv, card.cost))
 
     conn.commit()
-
-    cursor.execute("SELECT * FROM commanders")
-
-    rows = cursor.fetchall()
-    for row in rows:
-        print(row)
-
     cursor.close()
     conn.close()

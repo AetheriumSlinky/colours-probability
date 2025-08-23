@@ -1,5 +1,6 @@
 """Parses the raw JSON card data into a new databse object with less information."""
 
+
 class IllegalCard(Exception):
     pass
 
@@ -20,7 +21,7 @@ class JSONCard:
                     and (self.card_data['legalities']['commander'] == 'Legal')
                     and ('//' not in self.card_data['name'])):
                 self.__land()
-            elif self.card_data['leadershipSkills']['commander']:
+            elif self.card_data['leadershipSkills']['commander'] and self.card_data['legalities']['commander']:
                 self.__commander()
         except KeyError:
             self.__nonland()
