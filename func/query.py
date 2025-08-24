@@ -1,7 +1,7 @@
-import func.exceptions as ex
-from func.exceptions import CommanderNotFoundInDB
+from func.exceptions import CommanderNotFoundInDB, CommanderNotFoundFromSF
 from func.simulation import simulate
 from func.parse_sqlite import FromDatabase
+from func.scryfall import ScryfallCard
 
 
 class UserInputs:
@@ -35,6 +35,15 @@ In the Moxfield deck view click:
                 self.commander = self.from_database.find_commander(self.user_input.commander_name)
             except CommanderNotFoundInDB as e:
                 print(e)
+                try:
+                    self.commander = ScryfallCard(self.user_input.commander_name).request_card_data()
+                    reject_result = input(f"Commander named '{self.commander.name}' found from Scryfall. "
+                                         f"Press 'Enter' to confirm. Type 'no' to try again.\n")
+                    if reject_result:
+                        self.commander = None
+                except CommanderNotFoundFromSF as e:
+                    print(e)
+
 
     def ask_decklist(self):
         print("Paste the 'Copy for MTGO' decklist AS-IS, with the card counts in the front.")

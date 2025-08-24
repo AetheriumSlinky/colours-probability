@@ -14,9 +14,9 @@ class Commander:
     def __init__(self, name: str, mv: int, cost: str):
         self.name = name
         self.mv = mv
-        self.colours = [tuple()]
+        self.cost = [tuple()]
         if '/' not in cost:
-            self.colours = [tuple([char for char in cost if char in 'wubrg'])]
+            self.cost = [tuple([char for char in cost if char in 'wubrg'])]
         else:
             self.__find_colours(cost)
         numerals = ''.join([char for char in cost if char.isnumeric()])
@@ -30,7 +30,7 @@ class Commander:
         colour_pattern = re.compile(r"(?<!\/)([a-z])(?!\/)|(?:([a-z])\/([a-z]))")
         for match in colour_pattern.finditer(cost):
             colours.append(''.join(match.groups(default="")))
-        self.colours = [c for c in itertools.product(*colours)]
+        self.cost = [c for c in itertools.product(*colours)]
 
 
 class ManaPool:
@@ -70,7 +70,7 @@ class Game:
     def success(self) -> bool:
         if self.draw_count >= self.commander.mv:
             pool_options = self.mana_pool.produces()
-            commander_options = self.commander.colours
+            commander_options = self.commander.cost
             for pool_tuple in pool_options:
                 for commander_tuple in commander_options:
                     if all(option in pool_tuple for option in commander_tuple):

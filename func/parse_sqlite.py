@@ -20,7 +20,7 @@ class FromDatabase:
             raise TooManyCommanders("Too many Commander card matches in the card database. Check spelling.")
 
         elif not commander_match:
-            raise CommanderNotFoundInDB("Commander name not found in the card database. Check spelling.")
+            raise CommanderNotFoundInDB("Commander name not found in the card database. Trying Scryfall.")
 
         return Commander(name=commander_match[0][0],
                          mv=commander_match[0][1],
