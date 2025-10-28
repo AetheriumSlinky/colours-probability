@@ -15,6 +15,6 @@ def main():
 if __name__ == '__main__':
     while True:
         main()
-        exit_condition = input("This simulation is complete. Press 'Enter' to try again or 'exit' to exit!")
+        exit_condition = input("This simulation is complete. Press 'Enter' to try again or type 'exit' to exit!\n")
         if exit_condition:
             sys.exit()

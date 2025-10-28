@@ -46,12 +46,11 @@ class ManaPool:
 
 class Deck:
     def __init__(self, cards: tuple[Card, ...]):
-        self.remaining_cards = list(cards)
+        self.cards = list(cards)
+        random.shuffle(self.cards)
 
-    def new_card(self) -> Card:
-        card = random.choice(self.remaining_cards)
-        self.remaining_cards.remove(card)
-        return card
+    def new_card(self, draw_count: int) -> Card:
+        return self.cards[draw_count]
 
 
 class Game:
@@ -62,10 +61,10 @@ class Game:
         self.mana_pool = ManaPool()
 
     def new_draw(self):
-        self.draw_count += 1
-        new_card = self.deck.new_card()
+        new_card = self.deck.new_card(self.draw_count)
         if new_card.land:
             self.mana_pool.add_land(new_card)
+        self.draw_count += 1
 
     def success(self) -> bool:
         if self.draw_count >= self.commander.mv:
