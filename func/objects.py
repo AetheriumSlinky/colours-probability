@@ -11,13 +11,14 @@ class Card:
 
 
 class Commander:
-    def __init__(self, cost: str, mv: int):
+    def __init__(self, name: str, mv: int, cost: str):
+        self.name = name
         self.mv = mv
-        self.colours = [tuple()]
+        self.cost = [tuple()]
         if '/' not in cost:
-            self.colours = [tuple([char for char in cost if char in 'wubrg'])]  # [(wur)]
+            self.cost = [tuple([char for char in cost if char in 'wubrg'])]
         else:
-            self.__find_colours(cost)  # [(wur), (wuu)]
+            self.__find_colours(cost)
         numerals = ''.join([char for char in cost if char.isnumeric()])
         if numerals:
             self.generic = cost.count('c') + int(''.join([char for char in cost if char.isnumeric()]))
@@ -29,7 +30,7 @@ class Commander:
         colour_pattern = re.compile(r"(?<!\/)([a-z])(?!\/)|(?:([a-z])\/([a-z]))")
         for match in colour_pattern.finditer(cost):
             colours.append(''.join(match.groups(default="")))
-        self.colours = [c for c in itertools.product(*colours)]  # a list of tuples of characters
+        self.cost = [c for c in itertools.product(*colours)]
 
 
 class ManaPool:
@@ -45,12 +46,11 @@ class ManaPool:
 
 class Deck:
     def __init__(self, cards: tuple[Card, ...]):
-        self.remaining_cards = list(cards)
+        self.cards = list(cards)
+        random.shuffle(self.cards)
 
-    def new_card(self) -> Card:
-        card = random.choice(self.remaining_cards)
-        self.remaining_cards.remove(card)
-        return card
+    def new_card(self, draw_count: int) -> Card:
+        return self.cards[draw_count]
 
 
 class Game:
@@ -61,15 +61,15 @@ class Game:
         self.mana_pool = ManaPool()
 
     def new_draw(self):
-        self.draw_count += 1
-        new_card = self.deck.new_card()
+        new_card = self.deck.new_card(self.draw_count)
         if new_card.land:
             self.mana_pool.add_land(new_card)
+        self.draw_count += 1
 
     def success(self) -> bool:
         if self.draw_count >= self.commander.mv:
             pool_options = self.mana_pool.produces()
-            commander_options = self.commander.colours
+            commander_options = self.commander.cost
             for pool_tuple in pool_options:
                 for commander_tuple in commander_options:
                     if all(option in pool_tuple for option in commander_tuple):

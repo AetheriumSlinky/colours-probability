@@ -3,7 +3,7 @@
 import json
 import sqlite3
 
-from func.parse_card import JSONCard
+from func.parse_json import JSONCard
 
 if __name__ == '__main__':
     with open('AtomicCards.json', encoding='utf-8') as c:
@@ -11,8 +11,8 @@ if __name__ == '__main__':
 
     lands = []
     commanders = []
-    for card in all_card_data['data'].values():
-        new_card = JSONCard(card)
+    for card_data in all_card_data['data'].values():
+        new_card = JSONCard(card_data)
         new_card.parse_card()
         if new_card.land:
             lands.append(new_card)
@@ -36,24 +36,22 @@ if __name__ == '__main__':
     create_commanders_table = """
         CREATE TABLE commanders (
             name VARCHAR(100),
+            mv INT,
             cost VARCHAR(15)
         );
     """
     cursor.execute(create_commanders_table)
 
     for card in lands:
-        cursor.execute("INSERT INTO lands (name, mana) VALUES (?, ?);", (card.name, card.produce))
+        cursor.execute("INSERT INTO lands (name, mana) VALUES (?, ?);",
+                       (card.name, card.produces))
 
     for card in commanders:
-        cursor.execute("INSERT INTO commanders (name, cost) VALUES (?, ?);", (card.name, card.cost))
+        cursor.execute("INSERT INTO commanders (name, mv, cost) VALUES (?, ?, ?);",
+                       (card.name, card.mv, card.cost))
 
     conn.commit()
-
-    cursor.execute("SELECT * FROM commanders")
-
-    rows = cursor.fetchall()
-    for row in rows:
-        print(row)
-
     cursor.close()
     conn.close()
+
+    input("Database updated. Press 'Enter' to exit.")
